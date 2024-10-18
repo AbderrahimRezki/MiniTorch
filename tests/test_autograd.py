@@ -106,5 +106,43 @@ class TestAutograd(unittest.TestCase):
         self.assertTrue((b.grad == np.array([0.0, 0.0, 0.0, 1.0, 2.0])).all())
 
 
+    def test_multiple_operations(self):
+        a = Tensor([1.0, -2.0, 3.0])
+        b = Tensor([0.5, 0.5, 0.5])
+        c = Tensor([2.0, 2.0, 2.0])
+        d = Tensor([1.0, -1.0, 0.0])
+
+        x = a + b                 
+        relu_x = relu(x)   
+
+        y = relu_x * c           
+        z = y + d         
+        relu_z = relu(z)   
+
+        relu_z.backward()
+
+        self.assertTrue((a.grad == np.array([2.0, 0.0, 2.0])).all())  # Gradients through the layers
+        self.assertTrue((b.grad == np.array([2.0, 0.0, 2.0])).all())  # Gradient similar to `a` since a + b
+        self.assertTrue((c.grad == np.array([1.5, 0.0, 3.5])).all())  # Gradient from relu_x * c
+        self.assertTrue((d.grad == np.array([1.0, 0.0, 1.0])).all())  # Gradient from the final addition (relu_z + d)
+
+    def test_sigmoid_forward(self):
+        a = Tensor([-2.0, 0.0, 2.0])
+        sigmoid_a = a.sigmoid()
+
+        expected = 1 / (1 + np.exp(-np.array([-2.0, 0.0, 2.0])))
+        self.assertTrue((sigmoid_a.data == expected).all())
+
+    def test_sigmoid_backward(self):
+        a = Tensor([1.0, -1.0, 2.0])
+        sigmoid_a = a.sigmoid()
+        sigmoid_a.backward()
+
+        sigmoid_vals = 1 / (1 + np.exp(-np.array([1.0, -1.0, 2.0])))
+        expected_grad = sigmoid_vals * (1 - sigmoid_vals)
+        
+        self.assertTrue((a.grad == expected_grad).all())
+
+
 if __name__ == '__main__':
     unittest.main()

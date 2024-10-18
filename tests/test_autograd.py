@@ -1,7 +1,7 @@
 import unittest
 from MiniTorch.tensor import Tensor
 import numpy as np
-from MiniTorch.functions import relu
+from MiniTorch.functions import relu, sigmoid
 
 class TestAutograd(unittest.TestCase):
 
@@ -128,14 +128,14 @@ class TestAutograd(unittest.TestCase):
 
     def test_sigmoid_forward(self):
         a = Tensor([-2.0, 0.0, 2.0])
-        sigmoid_a = a.sigmoid()
+        sigmoid_a = sigmoid(a)
 
         expected = 1 / (1 + np.exp(-np.array([-2.0, 0.0, 2.0])))
         self.assertTrue((sigmoid_a.data == expected).all())
 
     def test_sigmoid_backward(self):
         a = Tensor([1.0, -1.0, 2.0])
-        sigmoid_a = a.sigmoid()
+        sigmoid_a = sigmoid(a)
         sigmoid_a.backward()
 
         sigmoid_vals = 1 / (1 + np.exp(-np.array([1.0, -1.0, 2.0])))

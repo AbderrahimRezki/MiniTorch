@@ -12,3 +12,14 @@ def relu(tensor: Tensor):
 
     out._backward = _backward
     return out
+
+def sigmoid(tensor: Tensor):
+    _sigmoid = lambda x: 1 / (1 + np.exp(-x))
+    data = _sigmoid(tensor.data)
+    out = Tensor(data, _children = (tensor, ), _op = "sigmoid")
+
+    def _backward():
+        tensor.grad += data * (1 - data)
+    
+    out._backward = _backward
+    return out

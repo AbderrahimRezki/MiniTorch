@@ -30,6 +30,19 @@ class Tensor:
         out._backward = _backward
         return out
 
+    def __matmul__(self, other):
+        out = Tensor(self.data @ other.data, _children = (self, other), _op = "@")
+
+        def _backward():
+            self.grad += other.data.T * out.grad
+            other.grad += self.data.T * out.grad
+
+        out._backward = _backward
+        return out
+
+    def zero_grad(self):
+        self.grad = np.zeros(self.data.shape)
+
     def backward(self):
         self.grad = 1
 
@@ -45,4 +58,15 @@ class Tensor:
                     queue.append(child)
 
     def __repr__(self):
-        return f"Tensor(data = {self.data}, _children = ({self._prev}), _op = {self._op})"
+        return f"Tensor(data = {self.data}, _children = {self._prev}, _op = {self._op})"
+
+class Parameter(Tensor):
+    def __init__(self, n_in, n_out):
+        data = np.random.normal(1, 1 / n_in, size = (n_in, n_out))
+        super().__init__(data)
+
+    def __call__(self, x: Tensor):
+        return self @ x
+
+    def step(self, alpha = 0.1):
+        self.data -= alpha * self.grad

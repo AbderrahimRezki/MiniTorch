@@ -4,7 +4,6 @@ import numpy as np
 from MiniTorch.functions import relu, sigmoid
 
 class TestAutograd(unittest.TestCase):
-
     def test_add_scalars(self):
         a = Tensor(2)
         b = Tensor(3)
@@ -121,10 +120,10 @@ class TestAutograd(unittest.TestCase):
 
         relu_z.backward()
 
-        self.assertTrue((a.grad == np.array([2.0, 0.0, 2.0])).all())  # Gradients through the layers
-        self.assertTrue((b.grad == np.array([2.0, 0.0, 2.0])).all())  # Gradient similar to `a` since a + b
-        self.assertTrue((c.grad == np.array([1.5, 0.0, 3.5])).all())  # Gradient from relu_x * c
-        self.assertTrue((d.grad == np.array([1.0, 0.0, 1.0])).all())  # Gradient from the final addition (relu_z + d)
+        self.assertTrue((a.grad == np.array([2.0, 0.0, 2.0])).all())  
+        self.assertTrue((b.grad == np.array([2.0, 0.0, 2.0])).all())  
+        self.assertTrue((c.grad == np.array([1.5, 0.0, 3.5])).all())  
+        self.assertTrue((d.grad == np.array([1.0, 0.0, 1.0])).all())  
 
     def test_sigmoid_forward(self):
         a = Tensor([-2.0, 0.0, 2.0])
@@ -142,7 +141,6 @@ class TestAutograd(unittest.TestCase):
         expected_grad = sigmoid_vals * (1 - sigmoid_vals)
         
         self.assertTrue((a.grad == expected_grad).all())
-
 
 if __name__ == '__main__':
     unittest.main()

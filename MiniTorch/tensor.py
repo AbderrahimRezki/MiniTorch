@@ -67,6 +67,3 @@ class Parameter(Tensor):
 
     def __call__(self, x: Tensor):
         return self @ x
-
-    def step(self, alpha = 0.1):
-        self.data -= alpha * self.grad
